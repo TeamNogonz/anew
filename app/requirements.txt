@@ -2,3 +2,6 @@ fastapi
 uvicorn[standard]
 selenium
 webdriver-manager
+python-dotenv
+pydantic
+google-genai
