@@ -5,6 +5,7 @@ from config import settings
 import logging
 from typing import Optional, Dict, List, Any
 from bson import ObjectId
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -52,19 +53,33 @@ class MongoDB:
             raise Exception("MongoDB가 연결되지 않았습니다. connect() 메서드를 먼저 호출하세요.")
         return self.collection
     
-    def insert_summary(self, summary_data: dict):
-        """요약 데이터를 MongoDB에 저장"""
+    
+    def insert_summary_items(self, summary_items: list, metadata: Optional[Dict[str, Any]] = None):
+        """NewsSummaryItem 목록을 MongoDB에 저장"""
         try:
             if self.collection is None:
                 raise Exception("MongoDB가 연결되지 않았습니다. connect() 메서드를 먼저 호출하세요.")
-            result = self.collection.insert_one(summary_data)
-            logger.info(f"요약 데이터 저장 완료: {result}")
+            
+            # 저장할 데이터 구성
+            data_to_insert = {
+                "summary_items": summary_items,
+                "created_at": datetime.now().isoformat(),
+                "item_count": len(summary_items)
+            }
+            
+            # 메타데이터가 있으면 추가
+            if metadata:
+                data_to_insert.update(metadata)
+            
+            result = self.collection.insert_one(data_to_insert)
+            logger.info(f"NewsSummaryItem 목록 저장 완료: {result}")
+            return str(result.inserted_id)
         except Exception as e:
-            logger.error(f"요약 데이터 저장 실패: {e}")
+            logger.error(f"NewsSummaryItem 목록 저장 실패: {e}")
             raise Exception(f"데이터 저장에 실패했습니다: {str(e)}")
     
-    def get_summary_by_id(self, summary_id: str) -> Optional[Dict[str, Any]]:
-        """ID로 요약 데이터 조회"""
+    def get_summary_items_by_id(self, summary_id: str) -> Optional[Dict[str, Any]]:
+        """ID로 NewsSummaryItem 목록 조회"""
         try:
             if self.collection is None:
                 raise Exception("MongoDB가 연결되지 않았습니다. connect() 메서드를 먼저 호출하세요.")
@@ -73,18 +88,18 @@ class MongoDB:
                 return convert_objectid_to_str(result)
             return result
         except Exception as e:
-            logger.error(f"요약 데이터 조회 실패: {e}")
+            logger.error(f"NewsSummaryItem 목록 조회 실패: {e}")
             raise Exception(f"데이터 조회에 실패했습니다: {str(e)}")
     
-    def get_all_summaries(self, limit: int = 10) -> List[Dict[str, Any]]:
-        """모든 요약 데이터 조회 (최신순)"""
+    def get_all_summary_items(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """모든 NewsSummaryItem 목록 조회 (최신순)"""
         try:
             if self.collection is None:
                 raise Exception("MongoDB가 연결되지 않았습니다. connect() 메서드를 먼저 호출하세요.")
             results = list(self.collection.find().sort("_id", -1).limit(limit))
             return convert_objectid_to_str(results)
         except Exception as e:
-            logger.error(f"요약 데이터 목록 조회 실패: {e}")
+            logger.error(f"NewsSummaryItem 목록 조회 실패: {e}")
             raise Exception(f"데이터 목록 조회에 실패했습니다: {str(e)}")
 
 # 전역 MongoDB 인스턴스

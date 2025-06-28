@@ -2,8 +2,6 @@ from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from config import settings
-from summary.models import NewsSummaryRequest, NewsSummaryResponse
 from summary.services import NewsSummaryService
 from database import mongodb
 import logging
