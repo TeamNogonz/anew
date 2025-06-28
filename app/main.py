@@ -40,7 +40,7 @@ def get_news_service() -> NewsSummaryService:
 @app.on_event("startup")
 async def startup_event():
     try:
-        mongodb/.connect()
+        mongodb.connect()
         
         # 뉴스 서비스 초기화
         service = get_news_service()
