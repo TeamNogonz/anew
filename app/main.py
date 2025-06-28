@@ -42,10 +42,8 @@ def summarize_news(
     service: NewsSummaryService = Depends(get_news_service)
 ):
     try:
-        logger.info(f"뉴스 요약 요청: 최대길이={request.max_length}")
         result = service.summarize_news(request)
-        logger.info(f"뉴스 요약 완료: 압축비율={result.compression_ratio}%")
         return result
     except Exception as e:
-        logger.error(f"뉴스 요약 중 오류: {e}")
+        logger.exception("뉴스 요약 중 예외 발생")
         raise HTTPException(status_code=500, detail=str(e))
