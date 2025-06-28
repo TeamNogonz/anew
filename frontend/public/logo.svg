@@ -1,0 +1,15 @@
+<svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="anew-blue" x1="0" y1="0" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <!-- 말풍선(뉴스) + AI(원형) + 균형(중앙선) -->
+  <ellipse cx="19" cy="17" rx="14" ry="12" fill="url(#anew-blue)"/>
+  <rect x="16.5" y="10" width="5" height="14" rx="2.5" fill="#fff" opacity="0.18"/>
+  <ellipse cx="19" cy="17" rx="8.5" ry="7.5" fill="#fff" opacity="0.13"/>
+  <path d="M19 29C17.5 29 15 27.5 13.5 26L8 28.5C8.5 26.5 10 22.5 10 20C10 13.5 14.5 9 19 9C23.5 9 28 13.5 28 20C28 22.5 29.5 26.5 30 28.5L24.5 26C23 27.5 20.5 29 19 29Z" fill="#fff" fill-opacity="0.9"/>
+  <rect x="18.1" y="13.5" width="1.8" height="7" rx="0.9" fill="#3b82f6"/>
+  <circle cx="19" cy="17" r="2.2" fill="#06b6d4"/>
+</svg> 

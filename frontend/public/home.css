@@ -1,0 +1,232 @@
+body {
+  font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+  background: linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+.main-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(60, 80, 120, 0.10);
+  padding: 48px 32px 40px 32px;
+  margin-top: 48px;
+  margin-bottom: 48px;
+}
+.title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+  margin-bottom: 0.5rem;
+  color: #1a2233;
+  margin-top: 0.5rem;
+}
+.subtitle {
+  font-size: 1.2rem;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+.news-list {
+  color: #6b7280;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+.update-time {
+  text-align: right;
+  color: #a0aec0;
+  font-size: 0.98rem;
+  margin-bottom: 2.5rem;
+}
+.topic-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 2rem 0 1.2rem 0;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.7rem;
+  color: #2d3748;
+}
+.card-row {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+.card {
+  flex: 1 1 420px;
+  min-width: 340px;
+  border-radius: 18px;
+  padding: 2.3rem 2rem 1.7rem 2rem;
+  background: #f5f8ff;
+  border: none;
+  box-shadow: 0 4px 16px rgba(80, 120, 200, 0.08);
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+.card:hover {
+  box-shadow: 0 8px 32px rgba(80, 120, 200, 0.16);
+}
+.card.negative {
+  background: #fff6f6;
+  box-shadow: 0 4px 16px rgba(200, 80, 80, 0.08);
+}
+.card.negative:hover {
+  box-shadow: 0 8px 32px rgba(200, 80, 80, 0.16);
+}
+.card-title {
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  color: #222b44;
+}
+.card-title .icon {
+  font-size: 1.5rem;
+  margin-right: 0.6rem;
+}
+.card ul {
+  margin-left: 0;
+  margin-bottom: 1.1rem;
+  padding-left: 1.1rem;
+  color: #374151;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+.card-links {
+  font-size: 0.97rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  margin-top: auto;
+}
+.card-links a {
+  color: #3b82f6;
+  text-decoration: none;
+  transition: color 0.15s;
+  word-break: break-all;
+}
+.card-links a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+.card-links.negative a {
+  color: #ef4444;
+}
+.card-links.negative a:hover {
+  color: #b91c1c;
+}
+.card-links-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.18rem;
+  margin-top: 0.5rem;
+  letter-spacing: -0.2px;
+}
+@media (max-width: 900px) {
+  .main-container {
+    padding: 24px 6vw 24px 6vw;
+    max-width: 98vw;
+  }
+  .card-row {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .card {
+    min-width: 0;
+    padding: 1.3rem 0.7rem 1.1rem 0.7rem;
+  }
+}
+@media (max-width: 600px) {
+  .main-container {
+    padding: 10px 2vw 10px 2vw;
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+  .title {
+    font-size: 2rem;
+  }
+  .topic-title {
+    font-size: 1.1rem;
+  }
+  .card {
+    padding: 1.2rem 0.7rem 1rem 0.7rem;
+  }
+}
+.intro {
+  width: 100vw;
+  background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%);
+  color: #fff;
+  font-size: 1.08rem;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  text-align: center;
+  padding: 1.1rem 0 1.1rem 0;
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.07);
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 10;
+}
+@media (max-width: 600px) {
+  .intro {
+    font-size: 0.97rem;
+    padding: 0.7rem 0 0.7rem 0;
+  }
+}
+.logo {
+  height: 3rem;
+  vertical-align: middle;
+  margin-right: 0.7rem;
+  margin-bottom: 0.18rem;
+  display: inline-block;
+}
+@media (max-width: 600px) {
+  .logo {
+    height: 2rem;
+    margin-right: 0.4rem;
+    margin-bottom: 0.08rem;
+  }
+}
+.footer {
+  margin-top: 3rem;
+  padding: 1.2rem 0 1.7rem 0;
+  font-size: 0.93rem;
+  color: #a0aec0;
+  text-align: center;
+  background: none;
+  letter-spacing: 0.01em;
+}
+.footer div + div {
+  margin-top: 0.2rem;
+}
+.news-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f3f6fa;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(59, 130, 246, 0.06);
+  padding: 1.2rem 1.5rem 1.1rem 1.5rem;
+  margin: 0 auto 1.7rem auto;
+  max-width: 520px;
+}
+.news-box .subtitle {
+  text-align: center;
+  font-size: 1.08rem;
+  color: #2563eb;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.news-box .news-list {
+  text-align: center;
+  font-size: 1.01rem;
+  color: #334155;
+  letter-spacing: 0.01em;
+  font-weight: 500;
+  margin-bottom: 0;
+} 
