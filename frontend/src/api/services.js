@@ -15,7 +15,7 @@ export class ApiService {
   // 뉴스 요약 API (향후 사용을 위한 예시)
   static async summarizeNews(newsData) {
     try {
-      const response = await api.post('/api/summarize', newsData);
+      const response = await api.get('/data', newsData);
       return response.data;
     } catch (error) {
       throw new Error(`뉴스 요약 실패: ${error.message}`);
