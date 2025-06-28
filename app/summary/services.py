@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from google import genai
 from google.genai import types
 from typing import Optional
@@ -28,9 +29,27 @@ class NewsSummaryService:
         prompt = prompt.replace("{news_json}", news_json)
         return prompt
     
+    def _extract_json_from_response(self, response_text: str) -> str:
+        """AI 응답에서 JSON 마커를 제거하고 순수한 JSON만 추출"""
+        # JSON 마커 패턴들
+        patterns = [
+            r'```json\s*(.*?)\s*```',  # ```json ... ```
+            r'```\s*(.*?)\s*```',      # ``` ... ```
+            r'`(.*?)`',                # ` ... `
+        ]
+        
+        # 각 패턴으로 JSON 추출 시도
+        for pattern in patterns:
+            match = re.search(pattern, response_text, re.DOTALL)
+            if match:
+                return match.group(1).strip()
+        
+        # 마커가 없으면 전체 텍스트 반환 (이미 순수 JSON일 가능성)
+        return response_text.strip()
+    
     def summarize_news(self, request: NewsSummaryRequest) -> NewsSummaryResponse:
         try:
-            prompt = self._get_prompt(request.news_list, request.max_length, settings.summary_news_count)
+            prompt = self._get_prompt(request.news_list, request.max_length or 200, settings.summary_news_count)
 
             response = self.client.models.generate_content(
                 model=settings.model_name,
@@ -41,10 +60,14 @@ class NewsSummaryService:
                 ),
             )
             
-            summary_text = response.text.strip()
+            summary_text = response.text.strip() if response.text else ""
+
+            print(summary_text)
             
             try:
-                summary_data = json.loads(summary_text)
+                # JSON 마커 제거 및 순수 JSON 추출
+                cleaned_text = self._extract_json_from_response(summary_text)
+                summary_data = json.loads(cleaned_text)
                 summary_items = [NewsSummaryItem(**item) for item in summary_data]
             except json.JSONDecodeError as e:
                 raise Exception(f"AI 응답을 JSON으로 파싱할 수 없습니다: {str(e)}")

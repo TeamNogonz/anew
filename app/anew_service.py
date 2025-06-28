@@ -31,8 +31,16 @@ class AnewService:
             for item in summary_response.summary:
                 summary_items.append({
                     "title": item.title,
-                    "first_perspective": item.first_perspective,
-                    "second_perspective": item.second_perspective,
+                    "first_perspective": {
+                        "title": item.first_perspective.title,
+                        "icon": item.first_perspective.icon,
+                        "perspectives": item.first_perspective.perspectives
+                    },
+                    "second_perspective": {
+                        "title": item.second_perspective.title,
+                        "icon": item.second_perspective.icon,
+                        "perspectives": item.second_perspective.perspectives
+                    },
                     "reference_url": item.reference_url
                 })
             
