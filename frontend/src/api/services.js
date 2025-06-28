@@ -12,7 +12,7 @@ export class ApiService {
     }
   }
 
-  // 뉴스 요약 API (향후 사용을 위한 예시)
+
   static async summarizeNews(newsData) {
     try {
       const response = await api.get('/data', newsData);
