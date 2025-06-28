@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
-from models import NewsSummaryRequest, NewsSummaryResponse
-from services import NewsSummaryService
+from summary.models import NewsSummaryRequest, NewsSummaryResponse
+from summary.services import NewsSummaryService
 import logging
 
 logging.basicConfig(level=logging.INFO)
