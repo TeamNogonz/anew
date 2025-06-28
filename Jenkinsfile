@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git url: 'https://github.com/TeamNogonz/Bdam-server.git',
+                git url: 'https://github.com/TeamNogonz/anew.git',
                 branch: 'main',
                 credentialsId: 'githubJenkins'
             }
