@@ -1,15 +1,8 @@
-
 import React from 'react';
+import Home from './pages/Home';
 
 function App() {
-  return (
-    <iframe
-      src={process.env.PUBLIC_URL + '/home.html'}
-      title="Anew Home"
-      style={{ width: '100vw', height: '100vh', border: 'none' }}
-    />
-  );
-
+  return <Home />;
 }
 
 export default App;

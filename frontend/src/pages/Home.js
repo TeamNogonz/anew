@@ -1,85 +1,123 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import ApiService from '../api/services';
-import './Home.css';
+import React from 'react';
+import styles from './Home.module.css';
+import NewsBox from './NewsBox';
+import TopicCardSet from './TopicCardSet';
+import Footer from './Footer';
 
-const Home = () => {
-  const [pingResult, setPingResult] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const handlePingTest = async () => {
-    setLoading(true);
-    setError(null);
-    setPingResult(null);
-
-    try {
-      const result = await ApiService.ping();
-      setPingResult(result);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+const summary = [
+  {
+    title: '오징어 게임 시즌3 평가: 긍정적 vs 부정적',
+    first_perspective: {
+      title: '긍정적 관점',
+      icon: '👍',
+      perspectives: [
+        '일부 외신은 시즌3이 전작의 잔혹함과 풍자를 계승하여 강렬한 마무리를 선사했다고 평가하며, 특히 마지막 에피소드의 반전과 연출을 높이 평가했다.',
+        '돈이 인간성을 지배하는 세상을 비판하는 메시지도 여전히 유효하다고 보았다.'
+      ],
+      links: [
+        'https://n.news.naver.com/mnews/article/009/0005516242',
+        'https://n.news.naver.com/mnews/article/009/0005516240'
+      ],
+      type: 'positive'
+    },
+    second_perspective: {
+      title: '부정적 관점',
+      icon: '👎',
+      perspectives: [
+        '많은 외신들은 시즌3이 전작들의 성공을 재현하지 못했다고 비판했다.',
+        '반복적인 게임 구조와 평면적인 캐릭터, 부족한 상상력, 풍자의 감소 등을 지적하며 시즌1의 날카로운 메시지와 긴장감이 부족하다고 평가했다.',
+        '시즌2의 실망스러운 평가를 극복하지 못했다는 의견도 다수였다.'
+      ],
+      links: [
+        'https://n.news.naver.com/mnews/article/009/0005516242',
+        'https://n.news.naver.com/mnews/article/009/0005516240'
+      ],
+      type: 'negative'
     }
-  };
+  },
+  {
+    title: '윤석열 전 대통령 내란 특검 조사: 정부 vs 야당 관점',
+    first_perspective: {
+      title: '정부 관점(특검 측)',
+      icon: '🏛️',
+      perspectives: [
+        '윤석열 전 대통령의 공개 소환은 국민의 알 권리 충족과 수사의 투명성 확보 차원에서 필요한 조치였다.',
+        '법적 절차에 따라 진행되었으며, 윤 전 대통령 측의 주장은 수사 방해 시도로 볼 수 있다.'
+      ],
+      links: [
+        'https://n.news.naver.com/mnews/article/009/0005516252',
+        'https://n.news.naver.com/mnews/article/009/0005516241'
+      ],
+      type: 'positive'
+    },
+    second_perspective: {
+      title: '야당 관점(윤 전 대통령 측)',
+      icon: '🗳️',
+      perspectives: [
+        '특검의 공개 소환은 윤 전 대통령의 인권과 방어권을 심각하게 침해하는 행위이며, 변호인과의 사전 협의 없이 일방적으로 진행된 것은 법적 의무 위반이다.',
+        '국민의 알 권리보다 특정인을 망신주기 위한 의도가 있다고 주장한다.'
+      ],
+      links: [
+        'https://n.news.naver.com/mnews/article/009/0005516252',
+        'https://n.news.naver.com/mnews/article/009/0005516241'
+      ],
+      type: 'negative'
+    }
+  },
+  {
+    title: '중국 AI 산업 현황: 긍정적 vs 부정적 전망',
+    first_perspective: {
+      title: '긍정적 관점',
+      icon: '🤖',
+      perspectives: [
+        '중국은 정부의 지원으로 AI 분야에서 괄목할 만한 성장을 이루었고, 딥시크와 같은 경쟁력 있는 모델을 개발했다.',
+        '향후 기술 발전과 시장 확대 가능성이 높다.'
+      ],
+      links: [
+        'https://n.news.naver.com/mnews/article/009/0005516251'
+      ],
+      type: 'positive'
+    },
+    second_perspective: {
+      title: '부정적 관점',
+      icon: '⚠️',
+      perspectives: [
+        "미국의 수출 규제로 인해 핵심 부품 확보에 어려움을 겪고 있으며, 과도한 경쟁으로 인해 수익성이 낮은 '좀비 AI'가 양산되고 있다.",
+        '전기차 시장과 유사한 과잉 경쟁으로 인한 위기 가능성도 제기된다.'
+      ],
+      links: [
+        'https://n.news.naver.com/mnews/article/009/0005516251'
+      ],
+      type: 'negative'
+    }
+  }
+];
 
-  return (
-    <div className="home">
-      <header className="home-header">
-        <h1>뉴스 요약 서비스</h1>
-        <p>AI를 활용한 뉴스 요약 및 분석</p>
-      </header>
+const newsList = '매일경제 · 한국경제 · 서울경제 · 머니투데이 · 이데일리 · 비즈워치';
 
-      <main className="home-main">
-        <section className="ping-section">
-          <h2>서버 연결 테스트</h2>
-          <button 
-            onClick={handlePingTest} 
-            disabled={loading}
-            className="ping-button"
-          >
-            {loading ? '테스트 중...' : 'Ping 테스트'}
-          </button>
-
-          {pingResult && (
-            <div className="ping-result success">
-              <h3>✅ 서버 연결 성공!</h3>
-              <pre>{JSON.stringify(pingResult, null, 2)}</pre>
-            </div>
-          )}
-
-          {error && (
-            <div className="ping-result error">
-              <h3>❌ 서버 연결 실패</h3>
-              <p>{error}</p>
-            </div>
-          )}
-        </section>
-
-        <section className="features">
-          <h2>주요 기능</h2>
-          <div className="feature-grid">
-            <div className="feature-card">
-              <h3>📰 뉴스 요약</h3>
-              <p>긴 뉴스 기사를 AI가 핵심 내용으로 요약</p>
-            </div>
-            <div className="feature-card">
-              <h3>🔍 키워드 추출</h3>
-              <p>뉴스에서 중요한 키워드와 주제를 자동 추출</p>
-            </div>
-            <div className="feature-card">
-              <h3>📊 분석 리포트</h3>
-              <p>뉴스 내용을 바탕으로 한 인사이트 분석</p>
-            </div>
-          </div>
-        </section>
-
-        <nav className="navigation">
-          <Link to="/about" className="nav-link">서비스 소개</Link>
-        </nav>
-      </main>
+const Home = () => (
+  <>
+    <div className={styles.intro}>
+      Anew는 다양한 시각의 AI 요약으로 정치적 편향 없이 핵심만 전달하는 시사 뉴스 요약 서비스입니다 ☺️
     </div>
-  );
-};
+    <div className={styles['main-container']}>
+      <h1 className={styles.title}>
+        <img className={styles.logo} src={process.env.PUBLIC_URL + '/Anew_logo.png'} alt="Anew 로고" />
+        Anew
+      </h1>
+      <NewsBox subtitle="Ai 뉴스 요약에 활용된 언론사" newsList={newsList} />
+      <div className={styles['update-time']}>업데이트 시간: 2025.06.20, 13:00</div>
+      {summary.map((item, idx) => (
+        <TopicCardSet
+          key={idx}
+          title={item.title}
+          first={item.first_perspective}
+          second={item.second_perspective}
+        />
+      ))}
+    </div>
+    <Footer />
+  </>
+);
 
 export default Home; 
