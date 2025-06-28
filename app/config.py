@@ -9,5 +9,6 @@ class Settings:
     model_name: str = os.getenv("MODEL_NAME", "gemini-1.5-flash")
     max_tokens: int = int(os.getenv("MAX_TOKENS", "500"))
     temperature: float = float(os.getenv("TEMPERATURE", "0.7"))
+    summary_news_count: int = int(os.getenv("SUMMARY_NEWS_COUNT", "3"))
 
 settings = Settings() 
