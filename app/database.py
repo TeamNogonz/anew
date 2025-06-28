@@ -3,14 +3,27 @@ from pymongo.database import Database
 from pymongo.collection import Collection
 from config import settings
 import logging
+from typing import Optional, Dict, List, Any
+from bson import ObjectId
 
 logger = logging.getLogger(__name__)
 
+def convert_objectid_to_str(data: Any) -> Any:
+    """MongoDB 결과에서 ObjectId를 문자열로 변환하는 유틸리티 함수"""
+    if isinstance(data, dict):
+        return {key: convert_objectid_to_str(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [convert_objectid_to_str(item) for item in data]
+    elif isinstance(data, ObjectId):
+        return str(data)
+    else:
+        return data
+
 class MongoDB:
     def __init__(self):
-        self.client: MongoClient = None
-        self.database: Database = None
-        self.collection: Collection = None
+        self.client: Optional[MongoClient] = None
+        self.database: Optional[Database] = None
+        self.collection: Optional[Collection] = None
         
     def connect(self):
         """MongoDB에 연결"""
@@ -35,40 +48,41 @@ class MongoDB:
     
     def get_collection(self) -> Collection:
         """컬렉션 반환"""
-        if not self.collection:
+        if self.collection is None:
             raise Exception("MongoDB가 연결되지 않았습니다. connect() 메서드를 먼저 호출하세요.")
         return self.collection
     
-    def insert_summary(self, summary_data: dict) -> str:
+    def insert_summary(self, summary_data: dict):
         """요약 데이터를 MongoDB에 저장"""
         try:
+            if self.collection is None:
+                raise Exception("MongoDB가 연결되지 않았습니다. connect() 메서드를 먼저 호출하세요.")
             result = self.collection.insert_one(summary_data)
-            logger.info(f"요약 데이터 저장 완료: {result.inserted_id}")
-            return str(result.inserted_id)
+            logger.info(f"요약 데이터 저장 완료: {result}")
         except Exception as e:
             logger.error(f"요약 데이터 저장 실패: {e}")
             raise Exception(f"데이터 저장에 실패했습니다: {str(e)}")
     
-    def get_summary_by_id(self, summary_id: str) -> dict:
+    def get_summary_by_id(self, summary_id: str) -> Optional[Dict[str, Any]]:
         """ID로 요약 데이터 조회"""
         try:
-            from bson import ObjectId
+            if self.collection is None:
+                raise Exception("MongoDB가 연결되지 않았습니다. connect() 메서드를 먼저 호출하세요.")
             result = self.collection.find_one({"_id": ObjectId(summary_id)})
             if result:
-                result["_id"] = str(result["_id"])  # ObjectId를 문자열로 변환
+                return convert_objectid_to_str(result)
             return result
         except Exception as e:
             logger.error(f"요약 데이터 조회 실패: {e}")
             raise Exception(f"데이터 조회에 실패했습니다: {str(e)}")
     
-    def get_all_summaries(self, limit: int = 10) -> list:
+    def get_all_summaries(self, limit: int = 10) -> List[Dict[str, Any]]:
         """모든 요약 데이터 조회 (최신순)"""
         try:
+            if self.collection is None:
+                raise Exception("MongoDB가 연결되지 않았습니다. connect() 메서드를 먼저 호출하세요.")
             results = list(self.collection.find().sort("_id", -1).limit(limit))
-            # ObjectId를 문자열로 변환
-            for result in results:
-                result["_id"] = str(result["_id"])
-            return results
+            return convert_objectid_to_str(results)
         except Exception as e:
             logger.error(f"요약 데이터 목록 조회 실패: {e}")
             raise Exception(f"데이터 목록 조회에 실패했습니다: {str(e)}")

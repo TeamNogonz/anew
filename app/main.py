@@ -42,9 +42,7 @@ def get_news_service() -> NewsSummaryService:
 @app.on_event("startup")
 async def startup_event():
     try:
-        # MongoDB 연결
-        # mongodb.connect()
-        # logger.info("MongoDB 연결 완료")
+        mongodb.connect()
         
         # 뉴스 서비스 초기화
         service = get_news_service()
@@ -56,7 +54,7 @@ async def startup_event():
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    # mongodb.disconnect()
+    mongodb.disconnect()
     logger.info("server shutdown..")
 
 @app.get("/api/ping")
@@ -73,15 +71,3 @@ async def serve_react_app(full_path: str, request: Request):
         return FileResponse(index_path)
     else:
         return {"message": "React app not found. Please build and place in static directory."}
-
-@app.post("/api/summarize", response_model=NewsSummaryResponse)
-def summarize_news(
-    request: NewsSummaryRequest,
-    service: NewsSummaryService = Depends(get_news_service)
-):
-    try:
-        result = service.summarize_news(request)
-        return result
-    except Exception as e:
-        logger.exception("뉴스 요약 중 예외 발생")
-        raise HTTPException(status_code=500, detail=str(e))
