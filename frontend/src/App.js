@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-import { RouterProvider } from 'react-router-dom';
-import router from './routes';
-import './App.css';
 
-function App() {
-  return <RouterProvider router={router} />;
-=======
 import React from 'react';
 
 function App() {
@@ -16,7 +9,7 @@ function App() {
       style={{ width: '100vw', height: '100vh', border: 'none' }}
     />
   );
->>>>>>> 6833d8a ([Add] home page init)
+
 }
 
 export default App;
