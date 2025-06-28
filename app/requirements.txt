@@ -5,3 +5,4 @@ webdriver-manager
 python-dotenv
 pydantic
 google-genai
+pymongo

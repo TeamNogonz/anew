@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from summary.models import NewsSummaryRequest, NewsSummaryResponse
 from summary.services import NewsSummaryService
+from database import mongodb
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -23,13 +24,23 @@ def get_news_service() -> NewsSummaryService:
 
 @app.on_event("startup")
 async def startup_event():
-    logger.info("뉴스 요약 API 서버가 시작되었습니다.")
     try:
+        # MongoDB 연결
+        # mongodb.connect()
+        # logger.info("MongoDB 연결 완료")
+        
+        # 뉴스 서비스 초기화
         service = get_news_service()
         if not service.validate_api_key():
             logger.warning("Google API 키가 유효하지 않습니다. .env 파일을 확인해주세요.")
+        logger.info("server started..")
     except Exception as e:
         logger.error(f"서비스 초기화 중 오류: {e}")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    # mongodb.disconnect()
+    logger.info("server shutdown..")
 
 @app.get("/ping")
 def ping():
