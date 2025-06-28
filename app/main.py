@@ -61,11 +61,17 @@ def ping():
 
 @app.get("/data")
 def get_summary():
-    summary = mongodb.get_recent_summary_item()
-    if not summary:
+    response = mongodb.get_recent_summary_item()
+    
+    if not response:
         return []
-    return summary
-
+    
+    if 'data' in response:
+        summary_items = response.get('data', {}).get('summary_items', [])
+    else:
+        summary_items = response.get('summary_items', [])
+    
+    return summary_items
 
 @app.get("/{full_path:path}")
 async def serve_react_app(full_path: str, request: Request):
