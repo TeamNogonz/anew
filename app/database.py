@@ -27,7 +27,6 @@ class MongoDB:
         self.collection: Optional[Collection] = None
         
     def connect(self):
-        """MongoDB에 연결"""
         try:
             self.client = MongoClient(settings.mongodb_uri)
             # 연결 테스트
@@ -42,19 +41,17 @@ class MongoDB:
             raise Exception(f"MongoDB 연결에 실패했습니다: {str(e)}")
     
     def disconnect(self):
-        """MongoDB 연결 해제"""
         if self.client:
             self.client.close()
             logger.info("MongoDB 연결 해제")
     
     def get_collection(self) -> Collection:
-        """컬렉션 반환"""
         if self.collection is None:
             raise Exception("MongoDB가 연결되지 않았습니다. connect() 메서드를 먼저 호출하세요.")
         return self.collection
     
     
-    def insert_summary_items(self, summary_items: list, metadata: Optional[Dict[str, Any]] = None):
+    def insert_summary_items(self, summary_items: list):
         """NewsSummaryItem 목록을 MongoDB에 저장"""
         try:
             if self.collection is None:
@@ -66,10 +63,6 @@ class MongoDB:
                 "created_at": datetime.now().isoformat(),
                 "item_count": len(summary_items)
             }
-            
-            # 메타데이터가 있으면 추가
-            if metadata:
-                data_to_insert.update(metadata)
             
             result = self.collection.insert_one(data_to_insert)
             logger.info(f"NewsSummaryItem 목록 저장 완료: {result}")
@@ -101,6 +94,18 @@ class MongoDB:
         except Exception as e:
             logger.error(f"NewsSummaryItem 목록 조회 실패: {e}")
             raise Exception(f"데이터 목록 조회에 실패했습니다: {str(e)}")
+    
+    def get_recent_summary_item(self) -> Optional[Dict[str, Any]]:
+        """가장 최근 NewsSummaryItem 조회"""
+        try:
+            if self.collection is None:
+                raise Exception("MongoDB가 연결되지 않았습니다. connect() 메서드를 먼저 호출하세요.")
+            result = self.collection.find_one(sort=[("_id", -1)])
+            if result:
+                return convert_objectid_to_str(result)
+            return None
+        except Exception as e:
+            logger.error(f"NewsSummaryItem 조회 실패: {e}")
+            raise Exception(f"데이터 조회에 실패했습니다: {str(e)}")
 
-# 전역 MongoDB 인스턴스
 mongodb = MongoDB() 
