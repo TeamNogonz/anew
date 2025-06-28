@@ -4,7 +4,7 @@ from google import genai
 from google.genai import types
 from typing import Optional
 from config import settings
-from models import NewsSummaryRequest, NewsSummaryResponse, NewsSummaryItem
+from summary.models import NewsSummaryRequest, NewsSummaryResponse, NewsSummaryItem
 
 class NewsSummaryService:
     def __init__(self):
@@ -13,7 +13,7 @@ class NewsSummaryService:
         
         # Google Gemini API initialize
         self.client = genai.Client(api_key=settings.google_api_key)
-        self.prompt_template = self._load_prompt_template("prompts/news_summary_prompt.txt")
+        self.prompt_template = self._load_prompt_template("summary/prompts/news_summary_prompt.txt")
 
     def _load_prompt_template(self, path: str) -> str:
         if not os.path.exists(path):
