@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -23,12 +23,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-static_dir = os.path.join(os.path.dirname(__file__), "static")
-if os.path.exists(static_dir):
-    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
-    logger.info(f"정적 파일 디렉토리 마운트: {static_dir}")
-else:
-    logger.warning(f"정적 파일 디렉토리를 찾을 수 없습니다: {static_dir}")
+build_dir = os.path.join(os.path.dirname(__file__), "static")
+static_assets_dir = os.path.join(build_dir, "static")
+
+app.mount("/static", StaticFiles(directory=static_assets_dir), name="static")
 
 news_service = None
 
@@ -61,31 +59,20 @@ async def shutdown_event():
     # mongodb.disconnect()
     logger.info("server shutdown..")
 
-@app.get("/ping")
+@app.get("/api/ping")
 def ping():
     return {"message": "pong"}
 
-@app.get("/")
-async def serve_react_app():
-    """리액트 앱의 index.html을 제공"""
-    index_path = os.path.join(static_dir, "index.html")
+@app.get("/{full_path:path}")
+async def serve_react_app(full_path: str, request: Request):
+    if full_path.startswith("api/"):
+        raise HTTPException(status_code=404, detail="API endpoint not found")
+    
+    index_path = os.path.join(build_dir, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
     else:
         return {"message": "React app not found. Please build and place in static directory."}
-
-@app.get("/{full_path:path}")
-async def serve_react_routes(full_path: str):
-    """리액트 라우팅을 위한 fallback - 모든 경로를 index.html로 리다이렉트"""
-    # API 경로는 제외
-    if full_path.startswith("api/"):
-        raise HTTPException(status_code=404, detail="API endpoint not found")
-    
-    index_path = os.path.join(static_dir, "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    else:
-        raise HTTPException(status_code=404, detail="React app not found")
 
 @app.post("/api/summarize", response_model=NewsSummaryResponse)
 def summarize_news(
