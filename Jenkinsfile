@@ -48,8 +48,7 @@ pipeline {
             steps {
                 echo 'ECHO ----- [[Build Docker]] -----'
                 script {
-                    // BuildKit 활성화로 멀티스테이지 빌드 최적화
-                    sh 'docker build --no-cache -t ${imagename}:latest .'
+                    sh 'docker build -t ${imagename}:latest .'
                     dockerImage = docker.image("${imagename}:latest")
                 }
             }
@@ -94,10 +93,10 @@ pipeline {
                         docker run -d \
                             --name anew-server \
                             -p 8000:8000 \
-                            --env-file ${WORKSPACE}/.env \
-                            -v ${WORKSPACE}/logs:/app/logs \
+                            -v "${WORKSPACE}/.env:/app/.env:ro" \
+                            -v "${WORKSPACE}/logs:/app/logs" \
+                            --network nogonz-network \
                             ${imagename}:latest
-                            --network nogonz-network
                     '''
                     
                     // 컨테이너 상태 확인
