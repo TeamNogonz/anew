@@ -2,12 +2,12 @@ from pymongo import MongoClient
 from pymongo.database import Database
 from pymongo.collection import Collection
 from config import settings
-import logging
+from logger import get_logger
 from typing import Optional, Dict, List, Any
 from bson import ObjectId
 from datetime import datetime
 
-logger = logging.getLogger(__name__)
+logger = get_logger()
 
 def convert_objectid_to_str(data: Any) -> Any:
     """MongoDB 결과에서 ObjectId를 문자열로 변환하는 유틸리티 함수"""

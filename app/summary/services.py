@@ -5,7 +5,10 @@ from google import genai
 from google.genai import types
 from typing import Optional
 from config import settings
+from logger import get_logger
 from summary.models import NewsSummaryRequest, NewsSummaryResponse, NewsSummaryItem
+
+logger = get_logger()
 
 class NewsSummaryService:
     def __init__(self):
@@ -62,7 +65,7 @@ class NewsSummaryService:
             
             summary_text = response.text.strip() if response.text else ""
 
-            print(summary_text)
+            logger.info(f"AI 요약 응답: {summary_text[:200]}...")  # 로그에 응답 일부 기록
             
             try:
                 # JSON 마커 제거 및 순수 JSON 추출

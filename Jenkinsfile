@@ -4,11 +4,13 @@ pipeline {
     environment {
         imagename = "nogonz/anew"
         registryCredential = 'nogonz-dockerhub'
+        envFileCredential = 'ANEW_ENV_FILE'
         dockerImage = ''
+        DOCKER_BUILDKIT = '1'
     }
 
     stages {
-        stage('Git Checkout') {
+        stage('Git Clone') {
             steps {
                 git url: 'https://github.com/TeamNogonz/anew.git',
                 branch: 'main',
@@ -19,59 +21,109 @@ pipeline {
                     echo 'Successfully Cloned Repository'
                 }
                 failure {
-                    error 'ERROR ----- [[Clonning Repository]] -----'
+                    error 'ERROR ----- [[Cloning Repository]] -----'
                 }
             }
         }
 
-        stage('Bulid Docker') {
-          agent any
-          steps {
-            echo 'ECHO ----- [[Bulid Docker]] -----'
-                dir ('/var/jenkins_home/workspace/anew-server'){
-                    script {
-                        dockerImage = docker.build imagename
+        stage('Environment Setup') {
+            steps {
+                echo 'ECHO ----- [[Environment Setup]] -----'
+                script {
+                    // Jenkins Credentials에서 .env 파일 내용을 가져와서 생성
+                    withCredentials([file(credentialsId: envFileCredential, variable: 'ENV_FILE_CONTENT')]) {
+                        writeFile file: '.env', text: ENV_FILE_CONTENT
+                        echo 'Successfully created .env file from Jenkins credentials'
                     }
                 }
-          }
-          post {
-            failure {
-              error 'ERROR ----- [[Bulid Docker]] -----'
             }
-          }
+            post {
+                failure {
+                    error 'ERROR ----- [[Environment Setup Failed]] -----'
+                }
+            }
+        }
+
+        stage('Build Docker') {
+            steps {
+                echo 'ECHO ----- [[Build Docker]] -----'
+                script {
+                    // BuildKit 활성화로 멀티스테이지 빌드 최적화
+                    sh 'docker build --no-cache -t ${imagename}:latest .'
+                    dockerImage = docker.image("${imagename}:latest")
+                }
+            }
+            post {
+                failure {
+                    error 'ERROR ----- [[Build Docker]] -----'
+                }
+            }
         }
 
         stage('Push Docker') {
-          agent any
-          steps {
-            echo 'ECHO ----- [[Push Docker]] -----'
-            script {
-                dir("${env.WORKSPACE}") {
-                    // first param '' is default registry (Docker Hub)
+            steps {
+                echo 'ECHO ----- [[Push Docker]] -----'
+                script {
+                    // latest 태그와 버전 태그 모두 푸시
                     docker.withRegistry('', registryCredential) {
+                        dockerImage.push("latest")
                         dockerImage.push("1.0")
                     }
-                }   
+                }
             }
-          }
-          post {
-            failure {
-              error 'ERROR ----- [[Push Docker]] -----'
+            post {
+                failure {
+                    error 'ERROR ----- [[Push Docker]] -----'
+                }
             }
-          }
         }
 
-        stage('Docker Run') {
+        stage('Deploy Application') {
             steps {
-                echo 'ECHO ----- [[Pull Docker Image & Docker Image Run]] -----'
-                    sh """
-                        docker pull nogonz/anew:1.0
-                        docker stop anew-server && docker rm anew-server | true
-                        docker run -d -p 8000:8000 -v /nogonz/anew/app:/app --name anew-server -u root nogonz/anew:1.0
-                        docker image prune -af
-                    """ 
-                echo 'ECHO ----- [[Pull Docker Image & Docker Image Run DONE]] -----'
+                echo 'ECHO ----- [[Deploy Application]] -----'
+                script {
+                    // 기존 컨테이너 정리
+                    sh '''
+                        docker stop anew-server || true
+                        docker rm anew-server || true
+                    '''
+                    
+                    // 새 컨테이너 실행 (환경변수 파일 및 로그 디렉토리 마운트)
+                    sh '''
+                        docker pull ${imagename}:latest
+                        docker run -d \
+                            --name anew-server \
+                            -p 8000:8000 \
+                            -v $(pwd)/.env:/app/.env:ro \
+                            -v $(pwd)/logs:/app/logs \
+                            ${imagename}:latest
+                    '''
+                    
+                    // 컨테이너 상태 확인
+                    sh '''
+                        echo "Waiting for container to start..."
+                        sleep 10
+                        docker ps | grep anew-server
+                        docker logs anew-server --tail 20
+                    '''
+                }
             }
+            post {
+                failure {
+                    error 'ERROR ----- [[Deploy Application]] -----'
+                }
+                always {
+                    // 불필요한 이미지 정리
+                    sh 'docker image prune -af'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'ECHO ----- [[Pipeline Completed]] -----'
+            cleanWs()
         }
     }
 }

@@ -4,11 +4,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from summary.services import NewsSummaryService
 from database import mongodb
-import logging
+from logger import get_logger
 import os
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# 로거 설정 (uvicorn 로거도 포함)
+logger = get_logger()
 
 app = FastAPI()
 

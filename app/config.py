@@ -15,5 +15,10 @@ class Settings:
     mongodb_uri: str = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
     mongodb_database: str = os.getenv("MONGODB_DATABASE", "news_summary")
     mongodb_collection: str = os.getenv("MONGODB_COLLECTION", "summaries")
+    
+    # 로그 설정
+    log_level: str = os.getenv("LOG_LEVEL", "INFO")
+    log_dir: str = os.getenv("LOG_DIR", "logs")
+    log_format: str = os.getenv("LOG_FORMAT", "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 settings = Settings() 
