@@ -94,9 +94,10 @@ pipeline {
                         docker run -d \
                             --name anew-server \
                             -p 8000:8000 \
-                            -v $(pwd)/.env:/app/.env:ro \
-                            -v $(pwd)/logs:/app/logs \
+                            --env-file ${WORKSPACE}/.env \
+                            -v ${WORKSPACE}/logs:/app/logs \
                             ${imagename}:latest
+                            --network nogonz-network
                     '''
                     
                     // 컨테이너 상태 확인
