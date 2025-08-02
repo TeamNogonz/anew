@@ -13,12 +13,12 @@ export class ApiService {
   }
 
 
-  static async summarizeNews(newsData) {
+  static async getNewsData() {
     try {
-      const response = await api.get('/data', newsData);
+      const response = await api.get('/api/data');
       return response.data;
     } catch (error) {
-      throw new Error(`뉴스 요약 실패: ${error.message}`);
+      throw new Error(`뉴스 데이터 조회 실패: ${error.message}`);
     }
   }
 }

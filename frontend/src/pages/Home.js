@@ -13,8 +13,7 @@ const Home = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const newsData = {}; // 필요시 실제 데이터로 교체
-    ApiService.summarizeNews(newsData)
+    ApiService.getNewsData()
       .then(res => {
         setSummary(res.summary || res);
         setLoading(false);

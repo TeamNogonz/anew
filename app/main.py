@@ -59,7 +59,7 @@ async def shutdown_event():
 def ping():
     return {"message": "pong"}
 
-@app.get("/data")
+@app.get("/api/data")
 def get_summary():
     response = mongodb.get_recent_summary_item()
     
