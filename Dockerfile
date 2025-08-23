@@ -5,7 +5,7 @@ FROM node:18-alpine AS frontend-builder
 
 WORKDIR /app/frontend
 
-# 의존성 설치 (devDependencies 포함)
+# 프론트엔드 의존성 설치
 COPY frontend/package*.json ./
 RUN npm ci
 
@@ -14,13 +14,13 @@ COPY frontend/ .
 RUN npm run build
 
 # ==============================
-# 2. Python + Chromium + ChromeDriver 스테이지
+# 2. Python + Chromium + Selenium 스테이지
 # ==============================
 FROM python:3.10-slim
 
 WORKDIR /app
 
-# 필수 시스템 패키지 설치
+# 시스템 의존성 설치
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -37,21 +37,15 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     libu2f-udev \
     gcc \
+    chromium \
+    chromium-driver \
     && rm -rf /var/lib/apt/lists/*
-
-# Chromium 설치
-RUN apt-get update && apt-get install -y chromium && rm -rf /var/lib/apt/lists/*
-
-RUN wget -O /tmp/chromedriver.zip "https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.138/linux64/chrome-linux64.zip" \
-    && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
-    && rm /tmp/chromedriver.zip \
-    && chmod +x /usr/local/bin/chromedriver
 
 # Python 의존성 설치
 COPY app/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 백엔드 애플리케이션 복사
+# 백엔드 코드 복사
 COPY app/ .
 
 # 프론트엔드 빌드 결과물 복사

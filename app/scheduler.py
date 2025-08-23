@@ -29,7 +29,7 @@ class NewsScheduler:
             options.add_argument("--window-size=1920,1080")
             # ChromeDriverManager가 경로 적용
             self.driver = webdriver.Chrome(
-                service=Service("/usr/local/bin/chromedriver"),
+                service=Service("/usr/bin/chromedriver"),
                 options=options
             )
             logger.info("Chrome WebDriver 설정 완료")
