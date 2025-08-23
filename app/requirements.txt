@@ -6,3 +6,4 @@ python-dotenv
 pydantic
 google-genai
 pymongo
+schedule

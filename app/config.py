@@ -20,5 +20,9 @@ class Settings:
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
     log_dir: str = os.getenv("LOG_DIR", "logs")
     log_format: str = os.getenv("LOG_FORMAT", "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    
+    # 스케줄러 설정
+    schedule_interval: int = int(os.getenv("SCHEDULE_INTERVAL", "1"))  # 시간 단위
+    schedule_enabled: bool = os.getenv("SCHEDULE_ENABLED", "true").lower() == "true"
 
 settings = Settings() 

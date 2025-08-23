@@ -5,7 +5,9 @@ from fastapi.responses import FileResponse
 from summary.services import NewsSummaryService
 from database import mongodb
 from logger import get_logger
+from config import settings
 import os
+import threading
 
 # 로거 설정 (uvicorn 로거도 포함)
 logger = get_logger()
@@ -37,6 +39,19 @@ def get_news_service() -> NewsSummaryService:
             raise HTTPException(status_code=500, detail=str(e))
     return news_service
 
+def init_schedule():
+    """백그라운드에서 스케줄러 실행"""
+    try:
+        from scheduler import NewsScheduler
+        
+        logger.info(f"스케줄러 시작 - {settings.schedule_interval}시간 간격")
+        scheduler = NewsScheduler()
+        scheduler.start_scheduler(settings.schedule_interval)
+    except Exception as e:
+        logger.error(f"스케줄러 시작 중 오류: {e}")
+        if 'scheduler' in locals():
+            scheduler.stop_scheduler()
+
 @app.on_event("startup")
 async def startup_event():
     try:
@@ -46,6 +61,13 @@ async def startup_event():
         service = get_news_service()
         if not service.validate_api_key():
             logger.warning("Google API 키가 유효하지 않습니다. .env 파일을 확인해주세요.")
+        
+        # 스케줄러를 백그라운드 스레드로 시작
+        if settings.schedule_enabled:
+            scheduler_thread = threading.Thread(target=init_schedule, daemon=True)
+            scheduler_thread.start()
+            logger.info("스케줄러 백그라운드 스레드 시작")
+        
         logger.info("server started..")
     except Exception as e:
         logger.error(f"서비스 초기화 중 오류: {e}")
