@@ -42,7 +42,7 @@ RUN apt-get update && apt-get install -y \
 # Chromium 설치
 RUN apt-get update && apt-get install -y chromium && rm -rf /var/lib/apt/lists/*
 
-RUN wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/139.0.7258.138/chromedriver_linux64.zip" \
+RUN wget -O /tmp/chromedriver.zip "https://storage.googleapis.com/chrome-for-testing-public/139.0.7258.138/linux64/chrome-linux64.zip" \
     && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
     && rm /tmp/chromedriver.zip \
     && chmod +x /usr/local/bin/chromedriver
