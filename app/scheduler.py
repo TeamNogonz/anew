@@ -27,9 +27,9 @@ class NewsScheduler:
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--disable-gpu")
             options.add_argument("--window-size=1920,1080")
-            # ChromeDriverManager가 현재 시스템에 맞는 드라이버를 자동으로 설치
+            # ChromeDriverManager가 경로 적용
             self.driver = webdriver.Chrome(
-                service=Service(ChromeDriverManager().install()), 
+                service=Service(ChromeDriverManager(path="/usr/local/bin").install()),
                 options=options
             )
             logger.info("Chrome WebDriver 설정 완료")
