@@ -13,7 +13,6 @@ RUN npm ci
 COPY frontend/ .
 RUN npm run build
 
-
 # ==============================
 # 2. Python + Chromium + ChromeDriver 스테이지
 # ==============================
@@ -43,9 +42,8 @@ RUN apt-get update && apt-get install -y \
 # Chromium 설치
 RUN apt-get update && apt-get install -y chromium && rm -rf /var/lib/apt/lists/*
 
-# ChromeDriver 설치 (Chrome/Chromium v139 기준)
-RUN CHROME_DRIVER_VERSION=$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE_139) \
-    && wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip" \
+# ChromeDriver 설치 (Chromium v139 기준, 정확한 버전 직접 명시)
+RUN wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/139.0.8471.41/chromedriver_linux64.zip" \
     && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
     && rm /tmp/chromedriver.zip \
     && chmod +x /usr/local/bin/chromedriver
