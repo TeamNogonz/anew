@@ -21,12 +21,12 @@ class NewsScheduler:
         """Chrome WebDriver 설정"""
         try:
             options = webdriver.ChromeOptions()
+            options.binary_location = "/usr/bin/chromium"  # Debian에 설치된 chromium 경로
             options.add_argument("--headless")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--disable-gpu")
             options.add_argument("--window-size=1920,1080")
-            
             # ChromeDriverManager가 현재 시스템에 맞는 드라이버를 자동으로 설치
             self.driver = webdriver.Chrome(
                 service=Service(ChromeDriverManager().install()), 
