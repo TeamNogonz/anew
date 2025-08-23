@@ -10,6 +10,8 @@ from logger import get_logger
 
 logger = get_logger()
 
+MAX_NEWS_BY_MEDIA = 2  # 언론사 별, 가져올 최대 뉴스 개수
+
 class NewsScheduler:
     def __init__(self):
         self.driver = None
@@ -46,8 +48,9 @@ class NewsScheduler:
     def crawl_news(self):
         """뉴스 크롤링 수행"""
         try:
-            logger.info("뉴스 크롤링 시작")
             start_time = time.time()
+            logger.info(f"[Crawl] Start time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))}")
+
             
             if not self.driver:
                 self.setup_driver()
@@ -66,7 +69,7 @@ class NewsScheduler:
                     urls = getNewsUrlByMediaId(self.driver, mediaId)
                     
                     for url in urls:
-                        if len(collected) >= 2:  # MAX_NEWS_BY_MEDIA
+                        if len(collected) >= MAX_NEWS_BY_MEDIA:
                             break
                         if any(d['url'] == url for d in collected):
                             continue
@@ -80,12 +83,12 @@ class NewsScheduler:
                             })
                         else:
                             fail_counts[mediaName] += 1
-                            logger.warning(f"'{mediaName}' 상세페이지 추출 실패: {url}")
+                            logger.warning(f"[Crawl] '{mediaName}' 상세페이지 추출 실패: {url}")
                     
-                    logger.info(f"{mediaName}: {len(collected)}개 뉴스 수집 완료")
+                    logger.info(f"[Crawl] {mediaName}: {len(collected)}개 뉴스 수집 완료")
                     
                 except Exception as e:
-                    logger.error(f"{mediaName} 크롤링 중 오류: {e}")
+                    logger.error(f"[Crawl] {mediaName} 크롤링 중 오류: {e}")
                     continue
             
             # 수집된 뉴스 데이터를 하나의 리스트로 합치기
@@ -94,23 +97,23 @@ class NewsScheduler:
                 all_news.extend(news_list)
             
             if all_news:
-                logger.info(f"총 {len(all_news)}개 뉴스 수집 완료")
+                logger.info(f"[Crawl] 총 {len(all_news)}개 뉴스 수집 완료")
                 
                 # 뉴스 요약 및 저장
                 try:
                     anew_service.process_and_save_summary(all_news)
-                    logger.info("뉴스 요약 및 저장 완료")
+                    logger.info("[Crawl] 뉴스 요약 및 저장 완료")
                 except Exception as e:
-                    logger.error(f"뉴스 요약 및 저장 실패: {e}")
+                    logger.error(f"[Crawl] 뉴스 요약 및 저장 실패: {e}")
             else:
-                logger.warning("수집된 뉴스가 없습니다")
+                logger.warning("[Crawl] 수집된 뉴스가 없습니다")
             
             end_time = time.time()
             elapsed = end_time - start_time
-            logger.info(f"크롤링 작업 완료 - 소요시간: {elapsed:.2f}초")
-            
+            logger.info(f"[Crawl] End time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(end_time))}")
+            logger.info(f"[Crawl] Elapsed time: {elapsed:.4f} seconds")
         except Exception as e:
-            logger.error(f"크롤링 작업 중 오류 발생: {e}")
+            logger.error(f"[Crawl] 크롤링 작업 중 오류 발생: {e}")
         finally:
             # WebDriver는 유지 (재사용을 위해)
             pass
@@ -123,7 +126,7 @@ class NewsScheduler:
             # 설정에서 간격 가져오기 (파라미터보다 설정 우선)
             interval = settings.schedule_interval if hasattr(settings, 'schedule_interval') else hour_interval
             
-            logger.info(f"뉴스 스케줄러 시작 - {interval}시간 간격")
+            logger.info(f"[Scheduler] 뉴스 스케줄러 시작 - {interval}시간 간격")
             
             # WebDriver 설정
             self.setup_driver()
@@ -132,7 +135,7 @@ class NewsScheduler:
             schedule.every(interval).hours.do(self.crawl_news)
             
             # 즉시 첫 번째 실행
-            logger.info("첫 번째 크롤링 작업 시작")
+            logger.info("[Scheduler] 첫 번째 크롤링 작업 시작")
             self.crawl_news()
             
             self.is_running = True
@@ -143,15 +146,15 @@ class NewsScheduler:
                 time.sleep(60)  # 1분마다 스케줄 확인
                 
         except KeyboardInterrupt:
-            logger.info("스케줄러 중단 요청 받음")
+            logger.info("[Scheduler] 스케줄러 중단 요청 받음")
         except Exception as e:
-            logger.error(f"스케줄러 실행 중 오류: {e}")
+            logger.error(f"[Scheduler] 스케줄러 실행 중 오류: {e}")
         finally:
             self.stop_scheduler()
     
     def stop_scheduler(self):
         """스케줄러 중지"""
-        logger.info("스케줄러 중지")
+        logger.info("[Scheduler] 스케줄러 중지")
         self.is_running = False
         self.cleanup_driver()
     
