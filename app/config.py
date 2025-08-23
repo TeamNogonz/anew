@@ -7,6 +7,7 @@ load_dotenv()
 class Settings:
     google_api_key: str = os.getenv("GOOGLE_API_KEY", "")
     model_name: str = os.getenv("MODEL_NAME", "gemini-1.5-flash")
+    fallback_models: list = os.getenv("FALLBACK_MODELS", "gemini-1.5-pro,gemini-1.0-pro").split(",")
     max_tokens: int = int(os.getenv("MAX_TOKENS", "500"))
     temperature: float = float(os.getenv("TEMPERATURE", "0.7"))
     summary_news_count: int = int(os.getenv("SUMMARY_NEWS_COUNT", "3"))
