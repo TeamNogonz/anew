@@ -95,6 +95,18 @@ class NewsSummaryService:
                 summary_data = json.loads(cleaned_text)
                 summary_items = [NewsSummaryItem(**item) for item in summary_data]
             except json.JSONDecodeError as e:
+                # JSON 파싱 실패 시 원본 응답을 파일로 저장
+                import datetime
+                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"failed_response_{timestamp}.txt"
+                
+                try:
+                    with open(filename, "w", encoding="utf-8") as f:
+                        f.write(summary_text)
+                    logger.error(f"JSON 파싱 실패. 원본 응답을 {filename}에 저장했습니다.")
+                except Exception as save_error:
+                    logger.error(f"파일 저장 중 오류: {save_error}")
+                
                 raise Exception(f"AI 응답을 JSON으로 파싱할 수 없습니다: {str(e)}")
             except Exception as e:
                 raise Exception(f"응답 데이터 구조가 올바르지 않습니다: {str(e)}")
