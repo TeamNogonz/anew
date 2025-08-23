@@ -86,14 +86,16 @@ def get_summary():
     response = mongodb.get_recent_summary_item()
     
     if not response:
-        return []
+        return {"summary_items": [], "created_at": None}
     
     if 'data' in response:
         summary_items = response.get('data', {}).get('summary_items', [])
+        created_at = response.get('data', {}).get('created_at')
     else:
         summary_items = response.get('summary_items', [])
+        created_at = response.get('created_at')
     
-    return summary_items
+    return {"summary_items": summary_items, "created_at": created_at}
 
 @app.get("/{full_path:path}")
 async def serve_react_app(full_path: str, request: Request):

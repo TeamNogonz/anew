@@ -9,13 +9,43 @@ const newsList = '매일경제 · 한국경제 · 서울경제 · 머니투데�
 
 const Home = () => {
   const [summary, setSummary] = useState([]);
+  const [createdAt, setCreatedAt] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // 날짜 포맷팅 함수
+  const formatUpdateTime = (dateString) => {
+    if (!dateString) return '';
+    
+    try {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      
+      return `${year}.${month}.${day}, ${hours}:${minutes}`;
+    } catch (error) {
+      console.error('날짜 포맷팅 오류:', error);
+      return '';
+    }
+  };
 
   useEffect(() => {
     ApiService.getNewsData()
       .then(res => {
-        setSummary(res.summary || res);
+        // 기존 응답 구조와 새로운 응답 구조 모두 지원
+        if (res.summary_items) {
+          setSummary(res.summary_items);
+          setCreatedAt(res.created_at);
+        } else if (Array.isArray(res)) {
+          setSummary(res);
+          setCreatedAt(null);
+        } else {
+          setSummary(res.summary || res);
+          setCreatedAt(null);
+        }
         setLoading(false);
       })
       .catch(err => {
@@ -51,7 +81,11 @@ const Home = () => {
         ) : (
           <>
             <NewsBox subtitle="Ai 뉴스 요약에 활용된 언론사" newsList={newsList} />
-            <div className={styles['update-time']}>업데이트 시간: 2025.06.20, 13:00</div>
+            {createdAt && (
+              <div className={styles['update-time']}>
+                업데이트 시간: {formatUpdateTime(createdAt)}
+              </div>
+            )}
             {summary.map((item, idx) => (
               <TopicCardSet
                 key={idx}
