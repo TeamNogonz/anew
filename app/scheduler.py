@@ -27,11 +27,16 @@ class NewsScheduler:
             options.add_argument("--disable-gpu")
             options.add_argument("--window-size=1920,1080")
             
+            # ChromeDriverManager가 현재 시스템에 맞는 드라이버를 자동으로 설치
             self.driver = webdriver.Chrome(
                 service=Service(ChromeDriverManager().install()), 
                 options=options
             )
             logger.info("Chrome WebDriver 설정 완료")
+
+        except Exception as e:
+            logger.error(f"WebDriver 설정 실패: {e}")
+            raise
         except Exception as e:
             logger.error(f"WebDriver 설정 실패: {e}")
             raise
