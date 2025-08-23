@@ -42,8 +42,7 @@ RUN apt-get update && apt-get install -y \
 # Chromium 설치
 RUN apt-get update && apt-get install -y chromium && rm -rf /var/lib/apt/lists/*
 
-# ChromeDriver 설치 (Chromium v139 기준, 정확한 버전 직접 명시)
-RUN wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/139.0.8471.41/chromedriver_linux64.zip" \
+RUN wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/139.0.7258.138/chromedriver_linux64.zip" \
     && unzip /tmp/chromedriver.zip -d /usr/local/bin/ \
     && rm /tmp/chromedriver.zip \
     && chmod +x /usr/local/bin/chromedriver
