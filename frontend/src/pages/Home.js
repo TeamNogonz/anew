@@ -4,6 +4,7 @@ import NewsBox from './NewsBox';
 import TopicCardSet from './TopicCardSet';
 import Footer from './Footer';
 import ApiService from '../api/services';
+import AnewLogo from '../assets/Anew_logo.png';
 
 const newsList = '매일경제 · 한국경제 · 서울경제 · 머니투데이 · 이데일리 · 비즈워치';
 
@@ -69,7 +70,7 @@ const Home = () => {
       </div>
       <div className={styles['main-container']}>
         <h1 className={styles.title}>
-          <img className={styles.logo} src={process.env.PUBLIC_URL + '/Anew_logo.png'} alt="Anew 로고" />
+          <img className={styles.logo} src={AnewLogo} alt="Anew 로고" />
           Anew
         </h1>
         {isEmpty ? (
