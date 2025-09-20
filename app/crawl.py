@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 from datetime import datetime
+from config import settings
 
 mediaIdList = {
     "009": "매일경제",
@@ -14,13 +15,13 @@ mediaIdList = {
     "648": "비즈워치"
 }
 
-MAX_NEWS_BY_MEDIA = 2  # 언론사 별, 가져올 최대 뉴스 개수
+# 언론사별 최대 뉴스 개수는 config.py에서 설정
 
 def getNewsUrlByMediaId(driver, mediaId):
     urls = []
     today_str = datetime.today().strftime("%Y%m%d")
 
-    for i in range(MAX_NEWS_BY_MEDIA):
+    for i in range(settings.max_news_by_media):
         page = (i // 20) + 1
         page_offset = i % 20
 
@@ -44,12 +45,12 @@ def getNewsUrlByMediaId(driver, mediaId):
             news_url = a_tag.get_attribute("href")
             urls.append(news_url)
 
-            if len(urls) >= MAX_NEWS_BY_MEDIA:
+            if len(urls) >= settings.max_news_by_media:
                 break
         except:
             continue
 
-        if len(urls) >= MAX_NEWS_BY_MEDIA:
+        if len(urls) >= settings.max_news_by_media:
             break
 
     return urls

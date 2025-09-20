@@ -11,6 +11,7 @@ class Settings:
     max_tokens: int = int(os.getenv("MAX_TOKENS", "500"))
     temperature: float = float(os.getenv("TEMPERATURE", "0.7"))
     summary_news_count: int = int(os.getenv("SUMMARY_NEWS_COUNT", "3"))
+    max_news_by_media: int = int(os.getenv("MAX_NEWS_BY_MEDIA", "10"))  # 언론사별 최대 뉴스 개수
     
     # MongoDB 설정
     mongodb_uri: str = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
@@ -23,7 +24,7 @@ class Settings:
     log_format: str = os.getenv("LOG_FORMAT", "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     
     # 스케줄러 설정
-    schedule_interval: int = int(os.getenv("SCHEDULE_INTERVAL", "1"))  # 시간 단위
+    schedule_interval: int = int(os.getenv("SCHEDULE_INTERVAL", "4"))  # 시간 단위
     schedule_enabled: bool = os.getenv("SCHEDULE_ENABLED", "true").lower() == "true"
 
 settings = Settings() 
