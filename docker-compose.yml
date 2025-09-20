@@ -8,3 +8,7 @@ services:
       - "8000:8000"
     volumes:
       - ./app:/app
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - TZ=Asia/Seoul
