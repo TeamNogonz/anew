@@ -7,10 +7,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 from anew_service import anew_service
 from database import mongodb
 from logger import get_logger
+from config import settings
 
 logger = get_logger()
-
-MAX_NEWS_BY_MEDIA = 2  # 언론사 별, 가져올 최대 뉴스 개수
 
 class NewsScheduler:
     def __init__(self):
@@ -74,7 +73,7 @@ class NewsScheduler:
                     urls = getNewsUrlByMediaId(self.driver, mediaId)
                     
                     for url in urls:
-                        if len(collected) >= MAX_NEWS_BY_MEDIA:
+                        if len(collected) >= settings.max_news_by_media:
                             break
                         if any(d['url'] == url for d in collected):
                             continue
