@@ -1,7 +1,7 @@
 # ==============================
 # 1. React 빌드 스테이지
 # ==============================
-FROM node:18-alpine AS frontend-builder
+FROM node:22-alpine AS frontend-builder
 
 WORKDIR /app/frontend
 
@@ -16,7 +16,7 @@ RUN npm run build
 # ==============================
 # 2. Python + Chromium + Selenium 스테이지
 # ==============================
-FROM python:3.10-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 

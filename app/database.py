@@ -28,7 +28,7 @@ class MongoDB:
         
     def connect(self):
         try:
-            self.client = MongoClient(settings.mongodb_uri)
+            self.client = MongoClient(settings.mongodb_uri, serverSelectionTimeoutMS=5000, connectTimeoutMS=5000)
             # 연결 테스트
             self.client.admin.command('ping')
             logger.info("MongoDB 연결 성공")
