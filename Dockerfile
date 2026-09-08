@@ -42,8 +42,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Python 의존성 설치
-COPY app/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY app/requirements.lock .
+RUN pip install --no-cache-dir -r requirements.lock
 
 # 백엔드 코드 복사
 COPY app/ .
@@ -52,7 +52,9 @@ COPY app/ .
 COPY --from=frontend-builder /app/frontend/build ./static
 
 # 로그 디렉토리 생성 및 권한 설정
-RUN mkdir -p logs && chmod 755 logs
+RUN useradd --create-home --uid 10001 anew && mkdir -p logs && chown anew:anew logs
+USER anew
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 SCHEDULE_ENABLED=false
 
 # 포트 노출
 EXPOSE 8000

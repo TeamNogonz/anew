@@ -44,7 +44,7 @@ const Home = () => {
           setSummary(res);
           setCreatedAt(null);
         } else {
-          setSummary(res.summary || res);
+          setSummary(Array.isArray(res.summary) ? res.summary : []);
           setCreatedAt(null);
         }
         setLoading(false);
@@ -66,7 +66,7 @@ const Home = () => {
   return (
     <>
       <div className={styles.intro}>
-        Anew는 다양한 시각의 AI 요약으로, 편향 없이 핵심만 전달하는 시사 뉴스 요약 서비스입니다 ☺️
+        Anew는 주요 뉴스를 서로 다른 관점으로 요약합니다. 원문과 함께 살펴보세요.
       </div>
       <div className={styles['main-container']}>
         <h1 className={styles.title}>

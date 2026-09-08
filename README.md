@@ -12,10 +12,18 @@ Response: `status: no_content` when no fresh matching news, otherwise `notificat
 
 ## Run
 
-Copy `.env.example` to `.env`, set MongoDB URI, service token, and Google API key. Run `pip install -r app/requirements.txt` and `cd app && uvicorn main:app --port 8001`. Existing React `/api/data` remains supported; static files are optional for a backend-only checkout.
+Copy `.env.example` to `.env`, set MongoDB URI, service token, and Google API key. Run `pip install -r app/requirements.lock` and `cd app && uvicorn main:app --port 8001`. Existing React `/api/data` remains supported; static files are optional for a backend-only checkout.
 
-`SCHEDULE_ENABLED=true` runs the existing collector in one Anew process. Do not use multiple API workers with the embedded collector; separate collector deployment is recommended at scale. MongoDB retains existing summary data. Core uses its own relational database.
+Run one separate collector with `cd app && python -m collector`. Production rejects an embedded collector in API processes. The collector has bounded browser page loads and graceful stop handling. Existing MongoDB data remains compatible; new timestamps include UTC offsets. Database setup/migration is a separate deployment task.
 
 Local fixture: `ENVIRONMENT=development FIXTURE_MODE=true SCHEDULE_ENABLED=false`. The only fixture is visibly marked `[데모]`. Production rejects fixture mode. Never place API keys in images, Git, or documentation.
 
 The integrated development Compose environment lives in the sibling nudger-server repository. The branch pipeline tests/builds only; deployment is a separate explicit action.
+
+## Verification
+
+Python 3.13: `pip install -r requirements-dev.txt && python -m pytest tests -q`.
+Web (Node 22.12+): `cd frontend && npm ci && npm test && npm run build && npm audit`.
+Vite serves local web development on port 5173 and proxies `/api` to port 8001.
+Docker uses the same lock files and runs the API/collector as a non-root user.
+No API key, real MongoDB connection, or Gemini call is needed by the tests.

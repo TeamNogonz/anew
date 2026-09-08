@@ -13,7 +13,7 @@ const TopicCardSet = ({ title, first, second, reference_url }) => (
       <div className={styles.card} style={{ maxWidth: 600, margin: '0.5rem auto 1.5rem auto', background: '#f8fafc', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
         <div className={styles['card-links-title']} style={{ marginTop: 0, marginBottom: '0.5rem' }}>요약에 활용된 뉴스</div>
         <div className={styles['card-links']} style={{ marginTop: 0 }}>
-          {reference_url.map((url, idx) => (
+          {reference_url.filter((url) => { try { return ['http:', 'https:'].includes(new URL(url).protocol); } catch { return false; } }).map((url, idx) => (
             <a key={idx} href={url} target="_blank" rel="noopener noreferrer">{url}</a>
           ))}
         </div>

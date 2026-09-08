@@ -61,14 +61,20 @@ def test_stable_event_and_keyword_filter():
     first = build_result(document(), settings, now)
     second = build_result(document(), settings, now)
     assert first["source_event_id"] == second["source_event_id"]
-    assert build_result(document("스포츠 소식"), settings, now) == {"status": "no_content"}
+    assert build_result(document("스포츠 소식"), settings, now) == {
+        "status": "no_content"
+    }
 
 
 def test_expired_or_untrusted_sources_are_not_returned():
     old = document()
     old["created_at"] = "2020-01-01T00:00:00+00:00"
-    assert build_result(old, AnewSettings(), int(time.time())) == {"status": "no_content"}
+    assert build_result(old, AnewSettings(), int(time.time())) == {
+        "status": "no_content"
+    }
 
     invalid = document()
     invalid["summary_items"][0]["reference_url"] = ["javascript:alert(1)"]
-    assert build_result(invalid, AnewSettings(), int(time.time())) == {"status": "no_content"}
+    assert build_result(invalid, AnewSettings(), int(time.time())) == {
+        "status": "no_content"
+    }
