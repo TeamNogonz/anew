@@ -4,15 +4,17 @@ Anew collects and summarizes news with two perspectives. Nudger Core owns users,
 
 ## Contract
 
-`POST /api/nudger/v1/evaluate`, `Authorization: Bearer <NUDGER_SERVICE_TOKEN>` (32+ characters).
+Collection remains limited to 매일경제·한국경제·서울경제·머니투데이·이데일리·비즈워치. `app/categories.py` defines 정치, 경제, 사회, 생활/문화, 엔터, 스포츠, IT/과학, 세계. The summary model requires exactly one valid category per topic. Categories without collected content do not produce a publication; balanced coverage of all eight categories is not guaranteed by the six financial outlets.
 
-Request: `{"request_id":"job-uuid","evaluated_at":<Unix seconds>,"settings":{"schema_version":1,"keywords":["AI"],"max_items":3}}`.
+The standalone collector registers its manifest at Core `PUT /api/internal/sub-apps/anew/manifest` and sends `POST /api/internal/sub-apps/anew/events`, using `NUDGER_CORE_URL` and the shared service credential `NUDGER_SERVICE_TOKEN`. The old evaluate/keyword polling API is retired. Anew receives no user IDs, preferences or FCM tokens.
 
-Response: `status: no_content` when no fresh matching news, otherwise `notification` with stable `source_event_id`, title, body, expires_at, and `content.summary_items`. Database failures return 503. Invalid settings return 422. Each summary expires after 24 hours. Missing keyword matches never produce synthetic news. Nudger polls this endpoint; polling does not invoke Gemini.
+The MongoDB summary document stores categorized items and immutable `nudger_outbox.events` in one insert. The publisher retries pending events until their 24-hour expiry, using the same event IDs and payloads after restart. Core deduplicates replay. Each new summary document is a new publication. Old unclassified documents remain readable by the web UI but are not backfilled into notifications.
+
+Authenticated `GET /api/nudger/v1/manifest` exposes the category metadata. Development fixture-only `POST /api/nudger/v1/demo-publish` explicitly sends one society demo publication; repeated calls in the same API process reuse the exact payload. It is unavailable in production.
 
 ## Run
 
-Copy `.env.example` to `.env`, set MongoDB URI, service token, and Google API key. Run `pip install -r app/requirements.lock` and `cd app && uvicorn main:app --port 8001`. Existing React `/api/data` remains supported; static files are optional for a backend-only checkout.
+Copy `.env.example` to `.env`, set MongoDB URI, Core URL (`NUDGER_CORE_URL`), service token, and Google API key. Run `pip install -r app/requirements.lock` and `cd app && uvicorn main:app --port 8001`. Existing React `/api/data` remains supported; static files are optional for a backend-only checkout.
 
 Run one separate collector with `cd app && python -m collector`. Production rejects an embedded collector in API processes. The collector has bounded browser page loads and graceful stop handling. Existing MongoDB data remains compatible; new timestamps include UTC offsets. Database setup/migration is a separate deployment task.
 

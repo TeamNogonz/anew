@@ -8,6 +8,7 @@ load_dotenv()
 class Settings:
     environment: str = os.getenv("ENVIRONMENT", "production")
     fixture_mode: bool = os.getenv("FIXTURE_MODE", "false").lower() == "true"
+    nudger_core_url: str = os.getenv("NUDGER_CORE_URL", "")
     nudger_service_token: str = os.getenv("NUDGER_SERVICE_TOKEN", "")
     google_api_key: str = os.getenv("GOOGLE_API_KEY", "")
     model_name: str = os.getenv("MODEL_NAME", "gemini-2.5-flash")

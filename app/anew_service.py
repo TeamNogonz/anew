@@ -30,6 +30,7 @@ class AnewService:
             for item in summary_response.summary:
                 summary_items.append(
                     {
+                        "category": item.category,
                         "title": item.title,
                         "first_perspective": {
                             "title": item.first_perspective.title,

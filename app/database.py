@@ -68,11 +68,23 @@ class MongoDB:
 
             # 저장할 데이터 구성
             data_to_insert = {
+                "_id": ObjectId(),
                 "summary_items": summary_items,
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "item_count": len(summary_items),
             }
 
+            from nudger import build_events
+
+            events = build_events(data_to_insert)
+            data_to_insert["nudger_outbox"] = {
+                "events": events,
+                "status": "pending" if events else "empty",
+                "attempts": 0,
+                "retry_at": 0,
+                "expires_at": min((e["expires_at"] for e in events), default=0),
+            }
+            # Summary and publication payloads are one atomic Mongo document.
             result = self.collection.insert_one(data_to_insert)
             logger.info(f"NewsSummaryItem 목록 저장 완료: {result}")
             return str(result.inserted_id)

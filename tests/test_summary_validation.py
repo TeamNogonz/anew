@@ -11,6 +11,7 @@ def service(url="https://source.example/article", sentence="검증된 요약"):
         "summary": [
             {
                 "title": "뉴스",
+                "category": "society",
                 "reference_url": [url],
                 "first_perspective": {
                     "title": "관점 1",

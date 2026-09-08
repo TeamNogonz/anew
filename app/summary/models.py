@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
+from categories import Category
 
 
 class NewsSummaryRequest(BaseModel):
@@ -18,6 +19,7 @@ class Perspective(BaseModel):
 
 
 class NewsSummaryItem(BaseModel):
+    category: Category = Field(..., description="주제에 가장 적합한 카테고리 하나")
     title: str = Field(..., min_length=1, max_length=200, description="주제 제목")
     first_perspective: Perspective = Field(..., description="첫 번째 관점")
     second_perspective: Perspective = Field(..., description="두 번째 관점")
