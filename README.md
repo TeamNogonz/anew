@@ -8,6 +8,7 @@
 ---
 
 ## 🎯 Project Overview
+<img width="510" height="413" alt="image" src="https://github.com/user-attachments/assets/bb5c2f86-eca5-4c92-b28b-f4fcab7dd2a2" />
 
 ### 프로젝트 목적
 
